@@ -31,7 +31,6 @@ type Milestone struct {
 
 // 20 OMIT
 func main() {
-	const milestoneInterval = 2
 	fmt.Println("newForOld Mark Milestone Command Handler", time.Now())
 	sc, _ := stan.Connect(clusterID, clientID, stan.NatsURL(svrURL),
 		stan.SetConnectionLostHandler(func(_ stan.Conn, reason error) {
@@ -41,6 +40,7 @@ func main() {
 	subject := "newForOld"
 	var n int
 	// 30 OMIT
+	const milestoneInterval = 2
 	startOpt := stan.DeliverAllAvailable()
 	sc.Subscribe(subject, func(msg *stan.Msg) { // HL
 		if !bytes.Contains(msg.Data, []byte(`"IDMapped"`)) {
@@ -55,7 +55,7 @@ func main() {
 			sc.Publish(subject, milestone) // HL
 			fmt.Printf("Milestone: %d marked at %v\n", n, pl.TimeStamp)
 		}
-	}, startOpt)
+	}, startOpt, stan.DurableName(""))
 	// 40 OMIT
 	select {} // wait forever
 }
