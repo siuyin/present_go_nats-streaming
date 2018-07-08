@@ -144,3 +144,26 @@ My Client has to rename their media library items from OldID to NewID.
 
 Note: **requirments added at a later stage.
 
+* Command Handler: map
+
+.play -edit cmd/map/main.go /10 O/,/40 O/
+
+* Query Handler: newID
+
+.play -edit cmd/newID/main.go /30 O/,/40 O/
+
+* newID: Discussion
+
+idMap is the in-memory "Database" 
+
+.code cmd/newID/main.go /31 O/,/32 O/
+
+The subscriber / Query Handler receives all events on starting up. Ignores irrelevant events.
+
+.code cmd/newID/main.go /33 O/,/34 O/
+
+* newID: Discussion
+
+listIDs is a goroutine running in the background.
+
+.code cmd/newID/main.go /50 O/,/60 O/
