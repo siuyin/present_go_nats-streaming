@@ -173,3 +173,7 @@ listIDs is a goroutine running in the background.
 .play -edit cmd/markMilestone/main.go /30 O/,/40 O/
 
 This kind of command handler is also known as a reactor becuase it reacts to events in the event log.
+
+* Presentation and code download
+
+.link https://github.com/siuyin/present_go-nats-streaming
