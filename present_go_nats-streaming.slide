@@ -41,3 +41,106 @@ messages are not removed due to consumers consuming them.
 Messages are stored regardless of the presence of subscriptions on that channel.
 
 -- github.com/nats-io/nats-streaming-server#concepts
+
+* NATS Streaming: Starting
+
+.code nats_streaming-run.sh
+
+Notes:
+-mc: Maximum number of channels
+-mm: Maximum number of messages per channel
+-mb: Maximum number of bytes per channel
+
+* Startup log
+
+  $ docker logs nats-streaming
+  [1] 2018/07/08 01:40:30.665182 [INF] STREAM: Starting nats-streaming-server[test-cluster] 
+      version 0.10.2
+  [1] 2018/07/08 01:40:30.665233 [INF] STREAM: ServerID: zQUL5Ca2wyeeSO6hoF4RFB
+  [1] 2018/07/08 01:40:30.665241 [INF] STREAM: Go version: go1.10.3
+  [1] 2018/07/08 01:40:30.665785 [INF] Starting nats-server version 1.1.0
+  [1] 2018/07/08 01:40:30.666490 [INF] Git commit [not set]
+  [1] 2018/07/08 01:40:30.666625 [INF] Listening for client connections on 0.0.0.0:4222
+  [1] 2018/07/08 01:40:30.668450 [INF] Server is ready
+  [1] 2018/07/08 01:40:30.693398 [INF] STREAM: Recovering the state...
+  [1] 2018/07/08 01:40:30.695405 [INF] STREAM: Recovered 0 channel(s)
+  [1] 2018/07/08 01:40:30.950696 [INF] STREAM: Message store is FILE
+  [1] 2018/07/08 01:40:30.951740 [INF] STREAM: Store location: /data
+  [1] 2018/07/08 01:40:30.952024 [INF] STREAM: ---------- Store Limits ----------
+  [1] 2018/07/08 01:40:30.953332 [INF] STREAM: Channels:            unlimited
+  [1] 2018/07/08 01:40:30.953738 [INF] STREAM: --------- Channels Limits --------
+  [1] 2018/07/08 01:40:30.953924 [INF] STREAM:   Subscriptions:          1000 *
+  [1] 2018/07/08 01:40:30.954309 [INF] STREAM:   Messages     :     unlimited
+  [1] 2018/07/08 01:40:30.955813 [INF] STREAM:   Bytes        :     unlimited
+  [1] 2018/07/08 01:40:30.955995 [INF] STREAM:   Age          :     unlimited *
+  [1] 2018/07/08 01:40:30.956165 [INF] STREAM:   Inactivity   :     unlimited *
+  [1] 2018/07/08 01:40:30.956521 [INF] STREAM: ----------------------------------
+
+  * = default values
+
+* Go NATS Streaming Clients
+
+* Publisher: Hello World
+
+go get "github.com/nats-io/go-nats-streaming"
+
+.play -edit cmd/hello-pub/main.go /10 O/,/40 O/
+
+* Subcriber: Hello World
+
+go get "github.com/nats-io/go-nats-streaming/pb"
+note: pb = protocol buffer compiled stubs package
+
+
+.play -edit cmd/hello-sub/main.go /30 O/,/40 O/
+
+* Replay options
+- DurableName:
+
+An ID the client provides to allow NATS Streaming to automatically track the last message sent to (ClientID,DurableName).
+
+Durable DeliverAllAvailable, will deliver messages to (ClientID,DurableName) which it had not previously seen.
+
+DurableName = "" means the client will do its own message sequence tracking.
+
+- StartAt Options:
+
+StartAtSequence(n uint64),
+StartAtTime(t time.Time), StartAtTimeDelta(d time.Duration),
+StartWithLastReceived(),DeliverAllAvailable()
+
+* Benchmarks
+Run on 1x core-i3, 1GB virtualbox VM.
+
+ siuyin@godev:~/go/src/github.com/nats-io/go-nats-streaming/examples/stan-bench$
+  go run main.go -s nats://192.168.99.100:4222 -n 10000 -ns 2 -ms 256 bench
+
+ Starting benchmark [msgs=10000, msgsize=256, pubs=1, subs=2]
+ NATS Streaming Pub/Sub stats: 11,609 msgs/sec ~ 2.83 MB/sec
+  Pub stats: 4,062 msgs/sec ~ 1015.68 KB/sec
+  Sub stats: 65,751 msgs/sec ~ 16.05 MB/sec
+   [1] 35,332 msgs/sec ~ 8.63 MB/sec (10000 msgs)
+   [2] 40,133 msgs/sec ~ 9.80 MB/sec (10000 msgs)
+   min 35,332 | avg 37,732 | max 40,133 | stddev 2,400 msgs
+
+* CQRS Command Query Responsibility Segregation
+
+.image CQRS.png _ 400
+
+NATS Streaming performs the roles of Write and Read Storages.
+
+* Toy Event Sourcing / CQRS system
+
+My Client has to rename their media library items from OldID to NewID.
+
+*Commands:* 
+1. Map(oldID, newID) -> IDMapped event
+**2. For every N IDs mapped, write MilestoneReached event
+
+*Queries:*
+1. NewID(oldID) -> newID
+**2. ListAllIDs() -> list of old and new IDs
+**3. ListMilesStonesReached() -> list of milestones attained and their times.
+
+Note: **requirments added at a later stage.
+

@@ -5,4 +5,4 @@ docker run -it -h nats-streaming \
 	--name nats-streaming \
 	-v natsstreamdata:/data \
 	-p 4222:4222 \
-	nats-streaming -st FILE --dir /data -mc 0 -mm 0 -mb 0
+	nats-streaming -st FILE --dir /data --file_sync=false -mc 0 -mm 0 -mb 0
