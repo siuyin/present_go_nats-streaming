@@ -135,44 +135,71 @@ My Client has to rename their media library items from OldID to NewID.
 
 *Commands:* 
 1. Map(oldID, newID) -> IDMapped event
-**2. MarkMilestone(n) for every n IDs mapped, write MilestoneReached event
+**2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events
 
 *Queries:*
 1. NewID(oldID) -> newID
 **2. ListAllIDs() -> list of old and new IDs
-**3. ListMilesStonesReached() -> list of milestones attained and their times.
+**3. ListRenameJobs(period) -> list of rename jobs status for given period
 
 Note: **requirments added at a later stage.
 
-* Command Handler: map
+* Command Handler: map(oldID, newID)
 
 .play -edit cmd/map/main.go /10 O/,/40 O/
 
-* Query Handler: newID
+* Query Handler: newID(oldID) returns new ID
 
-.play -edit cmd/newID/main.go /30 O/,/40 O/
+Part 1: Subcribe and populate idMap
 
-* newID: Discussion
+The subscriber / Query Handler receives all events on starting up.
+Ignores irrelevant events.
 
-idMap is the in-memory "Database" 
+.play -edit cmd/newID/main.go /10 O/,/20 O/
 
-.code cmd/newID/main.go /31 O/,/32 O/
+* newID: Part 2
 
-The subscriber / Query Handler receives all events on starting up. Ignores irrelevant events.
+Let's have an /id?id=o123 endpoint.
 
-.code cmd/newID/main.go /33 O/,/34 O/
+.code cmd/newID/main.go /30 O/,/40 O/
 
-* newID: Discussion
-
-listIDs is a goroutine running in the background.
+And an all IDs /ids endpoint.
 
 .code cmd/newID/main.go /50 O/,/60 O/
 
-* CommandHandler / Reactor: markMilestone
+* Let us test the newID function
 
-.play -edit cmd/markMilestone/main.go /30 O/,/40 O/
+- First run map(oldID,newID) to populate the database
+
+- Run Query Handler (2 slides back)
+
+- Then:
+
+  curl 127.0.0.1:8080/id?id=o123
+
+  curl 127.0.0.1:8080/ids
+
+* CommandHandler / Reactor: renameMedia
+
+renameMedia listens for "RenameRequested" events.
+And writes "Renamed" or "RenameFailed" events.
+
+.play -edit cmd/renameMedia/main.go /10 O/,/20 O/
 
 This kind of command handler is also known as a reactor becuase it reacts to events in the event log.
+
+* Add a /rename service endpoint
+
+.code cmd/renameMedia/main.go /30 O/,/40 O/
+
+
+* Let's test the renameMedia Reactor
+
+- Run the renamer (2 slides back)
+
+- Then:
+
+  curl -d "oID=0123&nID=nABC" -X POST 127.0.0.1:8080/rename
 
 * Presentation and code download
 
