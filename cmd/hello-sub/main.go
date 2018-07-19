@@ -30,7 +30,7 @@ func main() {
 	subject := "helloWorld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
 		fmt.Printf("%s\n", msg) // try msg.Data or msg.Sequence
-	}, startOpt, stan.DurableName("")) // try setting to "durable" // HL
+	}, startOpt, stan.DurableName("")) // try setting to "whiteboard-1" // HL
 	select {} // wait forever
 }
 
