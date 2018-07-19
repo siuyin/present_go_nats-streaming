@@ -205,6 +205,33 @@ The renameMedia reactor picks up the event and follows-up.
 
   curl -d "oID=0123&nID=nABC" -X POST 127.0.0.1:8080/rename
 
+* Toy Event Sourcing / CQRS system
+
+My Client has to rename their media library items from OldID to NewID.
+
+*Commands:* 
+1. Map(oldID, newID) -> IDMapped event  <-- _done_
+**2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events  <-- _done_
+
+*Queries:*
+1. NewID(oldID) -> newID  <-- _done_
+**2. ListAllIDs() -> list of old and new IDs  <-- _done_
+**3. ListRenameJobs(period) -> list of rename jobs status for given period
+
+Note: **requirments added at a later stage.
+
+* ListRenameJobs
+
+- Can you write this?
+
+- Given events:
+
+RenameRequested
+Renamed
+RenameFailed
+
+Hint: It is a query handler
+
 * Presentation and code download
 
 .link https://github.com/siuyin/present_go-nats-streaming
