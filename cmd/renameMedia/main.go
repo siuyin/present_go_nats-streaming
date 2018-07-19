@@ -36,18 +36,18 @@ func main() {
 	startOpt := stan.DeliverAllAvailable()
 	subject := "newForOld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
-		if !bytes.Contains(msg.Data, []byte(`"RenameRequested"`)) { // HL
+		if !bytes.Contains(msg.Data, []byte(`"RenameRequested"`)) { // 1. // HL
 			return
 		}
 		pl := Payload{}
 		json.Unmarshal(msg.Data, &pl)
 		// Actually do renaming here ...
 		fmt.Printf("!! renamed: %q -> %q\n", pl.OldID, pl.NewID)
-		pl.Event = "Renamed" // HL
+		pl.Event = "Renamed" // 2. // HL
 		plBytes, _ := json.Marshal(pl)
-		sc.Publish(subject, plBytes) // HL
+		sc.Publish(subject, plBytes) // 3. // HL
 		fmt.Printf("%s event created\n", plBytes)
-	}, startOpt)
+	}, startOpt, stan.DurableName("whiteboard-1")) // 4. // HL
 	// 20 OMIT
 	// 30 OMIT
 	http.HandleFunc("/rename", func(w http.ResponseWriter, req *http.Request) {

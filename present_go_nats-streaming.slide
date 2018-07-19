@@ -190,6 +190,10 @@ This kind of command handler is also known as a reactor becuase it reacts to eve
 
 * Add a /rename service endpoint
 
+All this endpoint does is to write a RenameRequested event.
+
+The renameMedia reactor picks up the event and follows-up.
+
 .code cmd/renameMedia/main.go /30 O/,/40 O/
 
 

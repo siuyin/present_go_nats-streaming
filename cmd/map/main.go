@@ -31,7 +31,7 @@ func main() {
 	subject := "newForOld"
 	pl := Payload{time.Now(), "IDMapped", "o123", "nABC"}
 	plBytes, _ := json.Marshal(pl)
-	sc.Publish(subject, plBytes)
+	sc.Publish(subject, plBytes) // Command handler writes events  // HL
 	fmt.Printf("%s event created\n", plBytes)
 }
 

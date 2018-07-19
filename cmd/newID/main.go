@@ -39,13 +39,13 @@ func main() {
 	startOpt := stan.DeliverAllAvailable()
 	subject := "newForOld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
-		if !bytes.Contains(msg.Data, []byte(`"IDMapped"`)) {
+		if !bytes.Contains(msg.Data, []byte(`"IDMapped"`)) { // 1. // HL
 			return
 		}
 		pl := Payload{}
 		json.Unmarshal(msg.Data, &pl)
 		idAccess.Lock()
-		idMap[pl.OldID] = pl.NewID
+		idMap[pl.OldID] = pl.NewID // 2. // HL
 		idAccess.Unlock()
 	}, startOpt)
 	// 20 OMIT
