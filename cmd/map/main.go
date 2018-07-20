@@ -29,9 +29,9 @@ func main() {
 	sc, _ := stan.Connect(clusterID, clientID, stan.NatsURL(svrURL))
 	defer sc.Close()
 	subject := "newForOld"
-	pl := Payload{time.Now(), "IDMapped", "o123", "nABC"}
+	pl := Payload{time.Now(), "IDMapped", "o123", "nABC"} // 1. Event // HL
 	plBytes, _ := json.Marshal(pl)
-	sc.Publish(subject, plBytes) // Command handler writes events  // HL
+	sc.Publish(subject, plBytes) // 2. Command handler writes events  // HL
 	fmt.Printf("%s event created\n", plBytes)
 }
 

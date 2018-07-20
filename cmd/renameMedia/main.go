@@ -36,27 +36,27 @@ func main() {
 	startOpt := stan.DeliverAllAvailable()
 	subject := "newForOld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
-		if !bytes.Contains(msg.Data, []byte(`"RenameRequested"`)) { // 1. // HL
+		if !bytes.Contains(msg.Data, []byte(`"RenameRequested"`)) { // 1. listen // HL
 			return
 		}
 		pl := Payload{}
 		json.Unmarshal(msg.Data, &pl)
 		// Actually do renaming here ...
 		fmt.Printf("!! renamed: %q -> %q\n", pl.OldID, pl.NewID)
-		pl.Event = "Renamed" // 2. // HL
+		pl.Event = "Renamed" // 2. response event // HL
 		plBytes, _ := json.Marshal(pl)
-		sc.Publish(subject, plBytes) // 3. // HL
+		sc.Publish(subject, plBytes) // 3. write response // HL
 		fmt.Printf("%s event created\n", plBytes)
-	}, startOpt, stan.DurableName("whiteboard-1")) // 4. // HL
+	}, startOpt, stan.DurableName("whiteboard-1")) // 4. durably track under wb-1 // HL
 	// 20 OMIT
 	// 30 OMIT
 	http.HandleFunc("/rename", func(w http.ResponseWriter, req *http.Request) {
 		oID := req.FormValue("oID")
 		nID := req.FormValue("nID")
 		subject := "newForOld"
-		pl := Payload{time.Now(), "RenameRequested", oID, nID}
+		pl := Payload{time.Now(), "RenameRequested", oID, nID} // 1. event // HL
 		plBytes, _ := json.Marshal(pl)
-		sc.Publish(subject, plBytes) // HL
+		sc.Publish(subject, plBytes) // 2. command // HL
 		fmt.Fprintf(w, "%s event created\n", plBytes)
 	})
 	// 40 OMIT

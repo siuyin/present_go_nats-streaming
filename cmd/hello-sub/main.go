@@ -24,13 +24,13 @@ func main() {
 			log.Fatalf("Connection lost, reason: %v", reason)
 		}))
 	defer sc.Close()
-	startOpt := stan.DeliverAllAvailable() // Change me // HL
+	startOpt := stan.DeliverAllAvailable() // 1. Change me // HL
 	// StartAtSequence(n),StartAtTime(t),StartAtTimeDelta(dur),
 	// StartWithLastReceived(),DeliverAllAvailable()
 	subject := "helloWorld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
-		fmt.Printf("%s\n", msg) // try msg.Data or msg.Sequence
-	}, startOpt, stan.DurableName("")) // try setting to "whiteboard-1" // HL
+		fmt.Printf("%s\n", msg)
+	}, startOpt, stan.DurableName("")) // 2. try setting to "whiteboard-1" // HL
 	select {} // wait forever
 }
 

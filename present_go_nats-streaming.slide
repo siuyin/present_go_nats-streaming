@@ -27,6 +27,10 @@ Event Sourcing uses a persistent, distributed log to inform:
 
 -- Loh Siu Yin
 
+
+I'm actually conflating Event Sourcing with CQRS here.
+Not strictly correct but it works for me.
+
 * Persistent, distributed log: NATS Streaming Server
 
 NATS Streaming: Message Log
@@ -99,7 +103,7 @@ note: pb = protocol buffer compiled stubs package
 
 An ID the client provides to allow NATS Streaming to automatically track the last message sent to (ClientID,DurableName).
 
-Durable DeliverAllAvailable, will deliver messages to (ClientID,DurableName) which it had not previously seen.
+A durable DeliverAllAvailable(), will deliver messages to (ClientID,DurableName) which it had not previously seen.
 
 DurableName = "" means the client will do its own message sequence tracking.
 
@@ -135,11 +139,11 @@ My Client has to rename their media library items from OldID to NewID.
 
 *Commands:* 
 1. Map(oldID, newID) -> IDMapped event
-**2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events
+2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events
 
 *Queries:*
 1. NewID(oldID) -> newID
-**2. ListAllIDs() -> list of old and new IDs
+2. ListAllIDs() -> list of old and new IDs
 **3. ListRenameJobs(period) -> list of rename jobs status for given period
 
 Note: **requirments added at a later stage.
@@ -211,11 +215,11 @@ My Client has to rename their media library items from OldID to NewID.
 
 *Commands:* 
 1. Map(oldID, newID) -> IDMapped event  <-- _done_
-**2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events  <-- _done_
+2. RenameMedia(oldID) -> RenameRequested event; RenameFailed or Renamed events  <-- _done_
 
 *Queries:*
 1. NewID(oldID) -> newID  <-- _done_
-**2. ListAllIDs() -> list of old and new IDs  <-- _done_
+2. ListAllIDs() -> list of old and new IDs  <-- _done_
 **3. ListRenameJobs(period) -> list of rename jobs status for given period
 
 Note: **requirments added at a later stage.
