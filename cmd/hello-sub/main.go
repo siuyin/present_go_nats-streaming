@@ -25,8 +25,8 @@ func main() {
 		}))
 	defer sc.Close()
 	startOpt := stan.DeliverAllAvailable() // 1. Change me // HL
-	// StartAtSequence(n),StartAtTime(t),StartAtTimeDelta(dur),
-	// StartWithLastReceived(),DeliverAllAvailable()
+	// StartAtSequence(n),StartAtTime(time.Date(2018,M,D, 0,0,0,0,time.UTC))
+	// StartAtTimeDelta(dur), StartWithLastReceived(), DeliverAllAvailable()
 	subject := "helloWorld"
 	sc.Subscribe(subject, func(msg *stan.Msg) {
 		fmt.Printf("%s\n", msg)
