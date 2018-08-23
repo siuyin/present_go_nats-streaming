@@ -1,6 +1,6 @@
 Event Sourcing with Go
 and NATS Streaming Server
-8 Jul 2018
+23 Aug 2018
 
 Loh Siu Yin
 Technology Consultant, Beyond Broadcast LLP
@@ -117,7 +117,7 @@ StartWithLastReceived(),DeliverAllAvailable()
 Run on 1x core-i3, 1GB virtualbox VM.
 
  siuyin@godev:~/go/src/github.com/nats-io/go-nats-streaming/examples/stan-bench$
-  go run main.go -s nats://192.168.99.100:4222 -n 10000 -ns 2 -ms 256 bench
+  go run main.go -s nats://192.168.99.100:4222 -n 1000 -ns 2 -ms 256 bench
 
  Starting benchmark [msgs=10000, msgsize=256, pubs=1, subs=2]
  NATS Streaming Pub/Sub stats: 11,609 msgs/sec ~ 2.83 MB/sec
